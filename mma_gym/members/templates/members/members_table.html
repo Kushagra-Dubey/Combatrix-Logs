@@ -1,0 +1,39 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Members Table</h1>
+  <table class="table table-bordered">
+    <thead class="thead-dark">
+      <tr>
+        <th>Timestamp</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Gender</th>
+        <th>Date of Birth</th>
+        <th>Address</th>
+        <th>Emergency Contact</th>
+        <th>Relationship</th>
+        <th>Emergency Contact Number</th>
+        <th>Consent for Media</th>
+        <th>Agreement to Terms</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for member in members %}
+      <tr>
+        <td>{{ member.Timestamp }}</td>
+        <td>{{ member.Name }}</td>
+        <td>{{ member.Email }}</td>
+        <td>{{ member.Gender }}</td>
+        <td>{{ member.Date_of_Birth }}</td>
+        <td>{{ member.Address }}</td>
+        <td>{{ member.Emergency_Contact_Name }}</td>
+        <td>{{ member.Relationship}}</td>
+        <td>{{ member.Emergency_Contact_Number}}</td>
+        <td>{{ member.Consent_To_Media}}</td>
+        <td>{{ member.Agreement_To_Terms}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -15,7 +15,6 @@ def get_google_sheet():
         settings.GOOGLE_SHEETS_KEY_FILE, scopes=SCOPES
     )
     client = gspread.authorize(credentials)
-    print("client", client)
     sheet = client.open_by_key(settings.SHEET_ID)
     return sheet
 
@@ -23,7 +22,6 @@ def get_google_sheet():
 def get_all_members():
     """Fetch all member records."""
     sheet = get_google_sheet().sheet1
-    print("sheets", sheet)
     return sheet.get_all_records()
 
 
