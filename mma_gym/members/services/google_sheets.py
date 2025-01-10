@@ -7,51 +7,52 @@ SCOPES = [
     "https://www.googleapis.com/auth/drive"
 ]
 
+
 class GoogleSheetsClient:
-    """Handles authentication and Google Sheets client initialization."""
-    
-    def __init__(self, sheet_index=1):
-        """
-        Initializes the Google Sheets client.
-        - `sheet_index` should be 1 for Sheet1 (members) and 2 for Sheet2 (memberships).
-        """
+    def __init__(self):
+        """Initialize the Google Sheets client."""
         self.credentials = Credentials.from_service_account_file(
             settings.GOOGLE_SHEETS_KEY_FILE, scopes=SCOPES
         )
         self.client = gspread.authorize(self.credentials)
-        self.sheet = self.client.open_by_key(settings.SHEET_ID).get_worksheet(sheet_index - 1)
+        self.sheet = self.client.open_by_key(settings.SHEET_ID)
 
-    def get_all_records(self):
-        return self.sheet.get_all_records()
-
-    def append_row(self, data):
-        self.sheet.append_row(data)
-
-    def update_cell(self, row, column, value):
-        self.sheet.update_cell(row, column, value)
-
-    def delete_row(self, row):
-        self.sheet.delete_rows(row)
+    def get_sheet(self, sheet_name="Sheet1"):
+        """Get a sheet by its name."""
+        return self.sheet.worksheet(sheet_name)
 
 
-class Member:
-    """Handles member-related operations in Google Sheets."""
-    
+class Member(GoogleSheetsClient):
     def __init__(self):
-        self.client = GoogleSheetsClient(sheet_index=1)  # Sheet1 for members
+        super().__init__()
+        self.sheet = self.get_sheet("Sheet1")
 
     def get_all_members(self):
         """Fetch all member records."""
-        return self.client.get_all_records()
+        return self.sheet.get_all_records()
 
     def add_member(self, data):
         """Add a new member."""
-        self.client.append_row(data)
+        self.sheet.append_row(data)
 
     def update_member(self, row, column, value):
         """Update a specific cell for a member."""
-        self.client.update_cell(row, column, value)
+        self.sheet.update_cell(row, column, value)
 
     def delete_member(self, row):
         """Delete a member by row."""
-        self.client.delete_row(row)
+        self.sheet.delete_rows(row)
+
+
+class Membership(GoogleSheetsClient):
+    def __init__(self):
+        super().__init__()
+        self.sheet = self.get_sheet("Sheet2") 
+
+    def get_membership_sheet(self):
+        """Get the membership sheet."""
+        return self.sheet
+
+    def update_membership(self, row, column, value):
+        """Update a specific cell for a membership."""
+        self.sheet.update_cell(row, column, value)
