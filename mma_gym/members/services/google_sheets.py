@@ -49,10 +49,18 @@ class Membership(GoogleSheetsClient):
         super().__init__()
         self.sheet = self.get_sheet("Sheet2") 
 
-    def get_membership_sheet(self):
-        """Get the membership sheet."""
-        return self.sheet
+    def get_all_memberships(self):
+        """Fetch all membership records."""
+        return self.sheet.get_all_records()
+
+    def add_membership(self, data):
+        """Add a new membership."""
+        self.sheet.append_row(data)
 
     def update_membership(self, row, column, value):
-        """Update a specific cell for a membership."""
+        """Update a specific membership field."""
         self.sheet.update_cell(row, column, value)
+    
+    def delete_membership(self, row):
+        """Delete a membership by row."""
+        self.sheet.delete_rows(row)
