@@ -123,3 +123,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+GOOGLE_SHEETS_KEY_FILE = BASE_DIR / "service-account-key.json"
+SHEET_ID = "1T42mo4XFHJvzP9xMsNtIhe8pSVfcMRpQDdRqj8ymaHc" 
+
