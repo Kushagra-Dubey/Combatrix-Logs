@@ -1,7 +1,10 @@
+import json
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from .services.google_sheets import Member, Membership
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from .utils import clean_phone
 
 
@@ -67,15 +70,24 @@ class MembershipView(View):
         self.membership = Membership()
 
     def list_memberships(self, request):
-        """Fetch and return all memberships."""
-        data = self.membership.get_all_memberships()
-        return JsonResponse({"memberships": data})
+        """Render the memberships page."""
+        memberships = self.membership.get_all_memberships()
+        print("memberships", memberships)
+        return render(request, "memberships/memberships_table.html", {"memberships": memberships})
 
-    def add_membership_view(self, request):
-        """Add a new membership."""
+    @method_decorator(csrf_exempt)
+    def add_membership(self, request):
+        """Handle adding a new membership."""
         if request.method == "POST":
-            # Example: ["Plan Name", "Duration", "Price"]
-            data = request.POST.getlist("data")
-            self.membership.add_membership(data)
-            return JsonResponse({"message": "Membership added successfully"})
+            try:
+                data = json.loads(request.body)
+                plan_name = data.get("plan_name")
+                plan_duration = data.get("plan_duration")
+                price = data.get("price")
+                if not all([plan_name, plan_duration, price]):
+                    return JsonResponse({"error": "Invalid data"}, status=400)
+                self.membership.add_membership([plan_name, plan_duration, price])
+                return JsonResponse({"message": "Membership added successfully"})
+            except json.JSONDecodeError:
+                return JsonResponse({"error": "Invalid JSON"}, status=400)
         return JsonResponse({"error": "Invalid request"}, status=400)

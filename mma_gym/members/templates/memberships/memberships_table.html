@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center">Membership Plans</h1>
+
+    <!-- Memberships Table -->
+    <div class="mt-4">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Plan Name</th>
+                    <th>Plan Duration</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for membership in memberships %}
+                <tr>
+                    <td>{{ membership.plan_name }}</td>
+                    <td>{{ membership.plan_duration }}</td>
+                    <td>{{ membership.price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Membership Section -->
+    <div class="mt-5">
+        <h2>Add New Membership</h2>
+        <form id="add-membership-form">
+            <div class="mb-3">
+                <label for="plan-name" class="form-label">Plan Name</label>
+                <input type="text" class="form-control" id="plan-name" placeholder="Enter plan name" required>
+            </div>
+            <div class="mb-3">
+                <label for="plan-duration" class="form-label">Plan Duration</label>
+                <select class="form-control" id="plan-duration" required>
+                    <option value="1 Month">1 Month</option>
+                    <option value="3 Months">3 Months</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Price</label>
+                <input type="number" class="form-control" id="price" placeholder="Enter price in INR" required>
+            </div>
+            <button type="button" class="btn btn-primary" id="submit-membership">Add Membership</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Add Membership Button Click Handler
+    document.getElementById("submit-membership").addEventListener("click", function () {
+        const planName = document.getElementById("plan-name").value;
+        const planDuration = document.getElementById("plan-duration").value;
+        const price = document.getElementById("price").value;
+
+        // Create the JSON data
+        const data = {
+            plan_name: planName,
+            plan_duration: planDuration,
+            price: price
+        };
+
+        fetch("{% url 'add_membership' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify(data) // Convert data to JSON string
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                // Success: Reload the page to update the table
+                alert(data.message);
+                location.reload();
+            } else {
+                // Error: Show an alert
+                alert(data.error || "Failed to add membership.");
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+</script>
+
+{% endblock %}
